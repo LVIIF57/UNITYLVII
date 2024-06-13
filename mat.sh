@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Imposta il colore del testo
 color="\033[38;5;202m"
@@ -7,16 +7,16 @@ color="\033[38;5;202m"
 height=$(stty size | cut -d' ' -f1)
 width=$(stty size | cut -d' ' -f2)
 
-# Crea una funzione per disegnare una linea orizzontale
+# Crea una funzione per disegnare una linea orizzontale di caratteri che cadono dall'alto
 draw_line() {
   line=""
   for i in $(seq 1 $1); do
-    line+="$RANDOM"
+    line+="$color$(printf '\n%*s' "-$((RANDOM % width))" '')"
   done
-  echo "$line"
+  echo -e "$line"
 }
 
-# Crea una funzione per disegnare una griglia di linee
+# Crea una funzione per disegnare una griglia di linee di caratteri che cadono dall'alto
 draw_matrix() {
   matrix=""
   for i in $(seq 1 $1); do
@@ -29,8 +29,8 @@ draw_matrix() {
 matrix_effect() {
   while true; do
     matrix=$(draw_matrix $height $width)
-    echo -e "$color$matrix"
-    sleep 0.1
+    echo -e "$matrix"
+    sleep 0.01
     clear
   done
 }
