@@ -1,322 +1,288 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Anarchy[🖤] Protocollo di defacement attivato!</title>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js"></script>
-    <script>
-        // Genera una chiave RSA
-        var rsaKey = CryptoJS.RSA.generate(2048, {
-            modulusLength: 128
-        });
-
-        // Genera una chiave AES
-        function generateKey() {
-            return CryptoJS.PBKDF2("password", CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f"), { keySize: 256/32, iterations: 1000 });
-        }
-
-        function generateIV() {
-            return CryptoJS.enc.Hex.parse(CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex));
-        }
-
-        function encryptHtml() {
-            var key = generateKey();
-            var iv = generateIV();
-            var html = document.documentElement.outerHTML;
-            var encryptedHtml = CryptoJS.AES.encrypt(html, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString();
-            var encryptedKey = CryptoJS.enc.Hex.parse(CryptoJS.AES.encrypt(key.toString(CryptoJS.enc.Hex), rsaKey.publicKey()).toString(CryptoJS.enc.Hex));
-            $("#encrypted-html").val(encryptedHtml);
-            $("#encryption-key").val(encryptedKey.toString(CryptoJS.enc.Base64));
-            $("#encryption-iv").val(iv.toString(CryptoJS.enc.Base64));
-        }
-
-        function decryptHtml() {
-            var encryptedKey = CryptoJS.enc.Base64.parse(document.getElementById("encryption-key").value);
-            var iv = CryptoJS.enc.Base64.parse(document.getElementById("encryption-iv").value);
-            var decryptedKey = CryptoJS.AES.decrypt(CryptoJS.enc.Hex.parse(CryptoJS.enc.Hex.stringify(encryptedKey)), rsaKey.privateKey()).toString(CryptoJS.enc.Hex);
-            var key = CryptoJS.enc.Hex.parse(decryptedKey);
-            var encryptedHtml = document.getElementById("encrypted-html").value;
-            var decryptedHtml = CryptoJS.AES.decrypt(encryptedHtml, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8);
-            document.open();
-            document.write(decryptedHtml);
-            document.close();
-
-            // Crea un div trasparente che sovrappone l'elemento textarea
-            var cover = document.createElement("div");
-            cover.style.position = "absolute";
-            cover.style.top = "0";
-            cover.style.left = "0";
-            cover.style.width = "100%";
-            cover.style.height = "100%";
-            cover.style.backgroundColor = "transparent";
-            cover.style.zIndex = "9999";
-            var textarea = document.getElementById("encrypted-html");
-            textarea.parentNode.insertBefore(cover, textarea);
-        }
-
-        // Esegui la crittografia e la decrittografia al caricamento della pagina
-        window.onload = function() {
-            if (document.readyState === "complete") {
-                encryptHtml();
-                decryptHtml();
-                document.body.oncopy = function(event) {
-                    event.preventDefault();
-                };
-                document.body.oncontextmenu = function(event) {
-                    event.preventDefault();
-                };
-
-                // Funzione per rendere la pagina HTML polimorfica
-                function makePolymorphic() {
-                    // Seleziona elementi random
-                    var elements = document.getElementsByTagName("*");
-                    var numElements = elements.length;
-                    var selectedElements = [];
-                    for (var i = 0; i < numElements; i++) {
-                        if (Math.random() < 0.1) {
-                            selectedElements.push(elements[i]);
-                        }
-                    }
-
-                    // Modifica le proprietà degli elementi selezionati in modo random
-                    selectedElements.forEach(function(element) {
-                        var styles = ["color", "backgroundColor", "fontSize", "borderRadius", "boxShadow", "padding", "margin", "width", "height", "display", "float", "clear", "position", "top", "right", "bottom", "left", "overflow", "overflowX", "overflowY", "zIndex", "opacity"];
-                        var numStyles = styles.length;
-                        for (var i = 0; i < numStyles; i++) {
-                            if (Math.random() < 0.5) {
-                                var styleName = styles[i];
-                                var styleValue = getRandomStyleValue(styleName);
-                                element.style[styleName] = styleValue;
-                            }
-                        }
-                    });
-                }
-
-                // Funzione per generare un valore random per una proprietà CSS
-                function getRandomStyleValue(styleName) {
-                    if (styleName === "color") {
-                        return "#" + Math.floor(Math.random()*16777215).toString(16);
-                    } else if (styleName === "backgroundColor") {
-                        return "#" + Math.floor(Math.random()*16777215).toString(16);
-                    } else if (styleName === "fontSize") {
-                        return Math.floor(Math.random() * 50) + "px";
-                    } else if (styleName === "borderRadius") {
-                        return Math.floor(Math.random() * 50) + "px";
-                    } else if (styleName === "boxShadow") {
-                        return Math.floor(Math.random() * 10) + "px " + Math.floor(Math.random() * 10) + "px " + Math.floor(Math.random() * 10) + "px rgba(0,0,0,0.5)";
-                    } else if (styleName === "padding") {
-                        return Math.floor(Math.random() * 50) + "px";
-                    } else if (styleName === "margin") {
-                        return Math.floor(Math.random() * 50) + "px";
-                    } else if (styleName === "width") {
-                        return Math.floor(Math.random() * 500) + "px";
-                    } else if (styleName === "height") {
-                        return Math.floor(Math.random() * 500) + "px";
-                    } else if (styleName === "display") {
-                        var displays = ["block", "inline-block", "inline", "flex", "grid", "none"];
-                        return displays[Math.floor(Math.random() * displays.length)];
-                    } else if (styleName === "float") {
-                        var floats = ["left", "right", "none"];
-                        return floats[Math.floor(Math.random() * floats.length)];
-                    } else if (styleName === "clear") {
-                        var clears = ["left", "right", "both", "none"];
-                        return clears[Math.floor(Math.random() * clears.length)];
-                    } else if (styleName === "position") {
-                        var positions = ["absolute", "relative", "fixed", "static"];
-                        return positions[Math.floor(Math.random() * positions.length)];
-                    } else if (styleName === "top" || styleName === "right" || styleName === "bottom" || styleName === "left") {
-                        return Math.floor(Math.random() * 500) + "px";
-                    } else if (styleName === "overflow" || styleName === "overflowX" || styleName === "overflowY") {
-                        var overflows = ["visible", "hidden", "scroll", "auto"];
-                        return overflows[Math.floor(Math.random() * overflows.length)];
-                    } else if (styleName === "zIndex") {
-                        return Math.floor(Math.random() * 1000);
-                    } else if (styleName === "opacity") {
-                        return Math.random();
-                    }
-                }
-
-                // Chiamata della funzione per rendere la pagina HTML polimorfica
-                setInterval(makePolymorphic, 1000);
-            } else {
-                window.onload = function() {
-                    encryptHtml();
-                    decryptHtml();
-                    document.body.oncopy = function(event) {
-                        event.preventDefault();
-                    };
-                    document.body.oncontextmenu = function(event) {
-                        event.preventDefault();
-                    };
-
-                    // Funzione per rendere la pagina HTML polimorfica
-                    function makePolymorphic() {
-                        // Seleziona elementi random
-                        var elements = document.getElementsByTagName("*");
-                        var numElements = elements.length;
-                        var selectedElements = [];
-                        for (var i = 0; i < numElements; i++) {
-                            if (Math.random() < 0.1) {
-                                selectedElements.push(elements[i]);
-                            }
-                        }
-
-                        // Modifica le proprietà degli elementi selezionati in modo random
-                        selectedElements.forEach(function(element) {
-                            var styles = ["color", "backgroundColor", "fontSize", "borderRadius", "boxShadow", "padding", "margin", "width", "height", "display", "float", "clear", "position", "top", "right", "bottom", "left", "overflow", "overflowX", "overflowY", "zIndex", "opacity"];
-                            var numStyles = styles.length;
-                            for (var i = 0; i < numStyles; i++) {
-                                if (Math.random() < 0.5) {
-                                    var styleName = styles[i];
-                                    var styleValue = getRandomStyleValue(styleName);
-                                    element.style[styleName] = styleValue;
-                                }
-                            }
-                        });
-                    }
-
-                    // Funzione per generare un valore random per una proprietà CSS
-                    function getRandomStyleValue(styleName) {
-                        if (styleName === "color") {
-                            return "#" + Math.floor(Math.random()*16777215).toString(16);
-                        } else if (styleName === "backgroundColor") {
-                            return "#" + Math.floor(Math.random()*16777215).toString(16);
-                        } else if (styleName === "fontSize") {
-                            return Math.floor(Math.random() * 50) + "px";
-                        } else if (styleName === "borderRadius") {
-                            return Math.floor(Math.random() * 50) + "px";
-                        } else if (styleName === "boxShadow") {
-                            return Math.floor(Math.random() * 10) + "px " + Math.floor(Math.random() * 10) + "px " + Math.floor(Math.random() * 10) + "px rgba(0,0,0,0.5)";
-                        } else if (styleName === "padding") {
-                            return Math.floor(Math.random() * 50) + "px";
-                        } else if (styleName === "margin") {
-                            return Math.floor(Math.random() * 50) + "px";
-                        } else if (styleName === "width") {
-                            return Math.floor(Math.random() * 500) + "px";
-                        } else if (styleName === "height") {
-                            return Math.floor(Math.random() * 500) + "px";
-                        } else if (styleName === "display") {
-                            var displays = ["block", "inline-block", "inline", "flex", "grid", "none"];
-                            return displays[Math.floor(Math.random() * displays.length)];
-                        } else if (styleName === "float") {
-                            var floats = ["left", "right", "none"];
-                            return floats[Math.floor(Math.random() * floats.length)];
-                        } else if (styleName === "clear") {
-                            var clears = ["left", "right", "both", "none"];
-                            return clears[Math.floor(Math.random() * clears.length)];
-                        } else if (styleName === "position") {
-                            var positions = ["absolute", "relative", "fixed", "static"];
-                            return positions[Math.floor(Math.random() * positions.length)];
-                        } else if (styleName === "top" || styleName === "right" || styleName === "bottom" || styleName === "left") {
-                            return Math.floor(Math.random() * 500) + "px";
-                        } else if (styleName === "overflow" || styleName === "overflowX" || styleName === "overflowY") {
-                            var overflows = ["visible", "hidden", "scroll", "auto"];
-                            return overflows[Math.floor(Math.random() * overflows.length)];
-                        } else if (styleName === "zIndex") {
-                            return Math.floor(Math.random() * 1000);
-                        } else if (styleName === "opacity") {
-                            return Math.random();
-                        }
-                    }
-
-                    // Chiamata della funzione per rendere la pagina HTML polimorfica
-                    setInterval(makePolymorphic, 1000);
-                };
-            }
-        };
-    </script>
-    <style>
-        body {
-            background-image: url("https://example.com/background.jpg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
-            margin: 0;
-        }
-        h1 {
-            font-size: 50px;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 2s ease-in-out;
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        img {
-            width: 400px;
-            height: auto;
-            margin: 0 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .card {
-            background-color: white;
-            color: black;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            margin: 20px;
-            text-align: center;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-        }
-        .overlay {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            width: 100%;
-            opacity: 0;
-            transition: .5s ease;
-            background-color: rgba(0, 0, 0, 0.6);
-        }
-        .card:hover .overlay {
-            opacity: 1;
-        }
-        .text {
-            color: white;
-            font-size: 20px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+<title>Anarchy[🖤] Protocollo di defacement attivato!</title>
+<style>
+* {
+user-select: none;
+}
+body {
+-webkit-user-drag: none;
+-khtml-user-drag: none;
+-moz-user-drag: none;
+-o-user-drag: none;
+user-drag: none;
+background-image: url("https://i.imgur.com/W0s3VXg.jpg");
+background-repeat: no-repeat;
+background-size: cover;
+color: white;
+font-family: Arial, sans-serif;
+text-align: center;
+padding: 50px;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+box-sizing: border-box;
+margin: 0;
+}
+h1 {
+font-size: 50px;
+margin-bottom: 50px;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+animation: fadeIn 2s ease-in-out;
+}
+@keyframes fadeIn {
+0% { opacity: 0; }
+100% { opacity: 1; }
+}
+img {
+width: 400px;
+height: auto;
+margin: 0 20px;
+border-radius: 10px;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.container {
+display: flex;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+}
+.card {
+background-color: white;
+color: black;
+border-radius: 10px;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+padding: 20px;
+margin: 20px;
+text-align: center;
+transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.card:hover {
+transform: translateY(-10px);
+box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+}
+.overlay {
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+height: 100%;
+width: 100%;
+opacity: 0;
+transition: .5s ease;
+background-color: rgba(0, 0, 0, 0.6);
+}
+.card:hover .overlay {
+opacity: 1;
+}
+.text {
+color: white;
+font-size: 20px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js"></script>
+<script>
+// generazione della chiave RSA
+var rsaKey = CryptoJS.RSA.generate(2048, {
+modulusLength: 128
+});
+// generazione della chiave AES
+function generateKey() {
+return CryptoJS.PBKDF2("password", CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f"), { keySize: 256/32, iterations: 1000 });
+}
+// generazione dell'IV
+function generateIV() {
+return CryptoJS.lib.WordArray.random(16);
+}
+// crittografia dell'HTML
+function encryptHtml() {
+var key = generateKey();
+var iv = generateIV();
+var html = document.documentElement.outerHTML;
+var encryptedHtml = CryptoJS.AES.encrypt(html, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString();
+var encryptedKey = CryptoJS.enc.Hex.parse(CryptoJS.AES.encrypt(key.toString(CryptoJS.enc.Hex), rsaKey.publicKey()).toString(CryptoJS.enc.Hex));
+$("#encrypted-html").val(encryptedHtml);
+$("#encryption-key").val(encryptedKey.toString(CryptoJS.enc.Base64));
+$("#encryption-iv").val(iv.toString(CryptoJS.enc.Base64));
+}
+// decrittografia dell'HTML
+function decryptHtml() {
+var encryptedKey = CryptoJS.enc.Base64.parse(document.getElementById("encryption-key").value);
+var iv = CryptoJS.enc.Base64.parse(document.getElementById("encryption-iv").value);
+var decryptedKey = CryptoJS.AES.decrypt(CryptoJS.enc.Hex.parse(CryptoJS.enc.Hex.stringify(encryptedKey)), rsaKey.privateKey()).toString(CryptoJS.enc.Hex);
+var key = CryptoJS.enc.Hex.parse(decryptedKey);
+var encryptedHtml = document.getElementById("encrypted-html").value;
+var decryptedHtml = CryptoJS.AES.decrypt(encryptedHtml, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8);
+document.open();
+document.write(decryptedHtml);
+document.close();
+}
+// crittografia e decrittografia dell'HTML al caricamento della pagina
+window.onload = function() {
+if (document.readyState === "complete") {
+encryptHtml();
+decryptHtml();
+}
+}
+// funzione per rendere la pagina HTML polimorfica
+function makePolymorphic() {
+// selezione di elementi random
+var elements = document.getElementsByTagName("*");
+var numElements = elements.length;
+var selectedElements = [];
+for (var i = 0; i < numElements; i++) {
+if (Math.random() < 0.1) {
+selectedElements.push(elements[i]);
+}
+}
+// modifica delle proprietà degli elementi selezionati in modo random
+selectedElements.forEach(function(element) {
+var styles = ["color", "backgroundColor", "fontSize", "borderRadius", "boxShadow", "padding", "margin", "width", "height", "display", "float", "clear", "position", "top", "right", "bottom", "left", "overflow", "overflowX", "overflowY", "zIndex", "opacity"];
+var numStyles = styles.length;
+for (var i = 0; i < numStyles; i++) {
+if (Math.random() < 0.5) {
+var styleName = styles[i];
+var styleValue = getRandomStyleValue(styleName);
+element.style[styleName] = styleValue;
+}
+}
+});
+}
+// generazione di un valore random per una proprietà CSS
+function getRandomStyleValue(styleName) {
+var min, max, randomValue;
+switch (styleName) {
+case "color":
+min = 0;
+max = 0xffffff;
+randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
+return "#" + randomValue.toString(16);
+case "backgroundColor":
+min = 0;
+max = 0xffffff;
+randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
+return "rgb(" + randomValue + "," + randomValue + "," + randomValue + ")";
+case "fontSize":
+min = 10;
+max = 50;
+return min + "px";
+case "borderRadius":
+min = 0;
+max = 50;
+return min + "%";
+case "boxShadow":
+min = 1;
+max = 10;
+var horizontalOffset = Math.floor(Math.random() * (max - min + 1)) + min;
+var verticalOffset = Math.floor(Math.random() * (max - min + 1)) + min;
+var blurRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+return horizontalOffset + "px " + verticalOffset + "px " + blurRadius + "px rgba(0, 0, 0, 0.5)";
+case "padding":
+min = 0;
+max = 50;
+return min + "%";
+case "margin":
+min = -50;
+max = 50;
+return min + "%";
+case "width":
+min = 50;
+max = 200;
+return min + "%";
+case "height":
+min = 50;
+max = 200;
+return min + "%";
+case "display":
+if (Math.random() < 0.5) {
+return "none";
+} else {
+return "block";
+}
+case "float":
+if (Math.random() < 0.5) {
+return "left";
+} else {
+return "right";
+}
+case "clear":
+if (Math.random() < 0.5) {
+return "left";
+} else {
+return "right";
+}
+case "position":
+if (Math.random() < 0.5) {
+return "absolute";
+} else {
+return "relative";
+}
+case "top":
+min = -50;
+max = 50;
+return min + "%";
+case "right":
+min = -50;
+max = 50;
+return min + "%";
+case "bottom":
+min = -50;
+max = 50;
+return min + "%";
+case "left":
+min = -50;
+max = 50;
+return min + "%";
+case "overflow":
+if (Math.random() < 0.5) {
+return "hidden";
+} else {
+return "visible";
+}
+case "overflowX":
+if (Math.random() < 0.5) {
+return "hidden";
+} else {
+return "visible";
+}
+case "overflowY":
+if (Math.random() < 0.5) {
+return "hidden";
+} else {
+return "visible";
+}
+case "zIndex":
+return Math.floor(Math.random() * 1000);
+case "opacity":
+min = 0.1;
+max = 1;
+return Math.random();
+}
+}
+// chiamata della funzione per rendere la pagina HTML polimorfica
+setInterval(makePolymorphic, 500);
+</script>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="overlay">
-                <div class="text">Caricamento in corso...</div>
-            </div>
-            <textarea id="encrypted-html" style="display: block; width: 100%; height: 300px; margin-top: 20px;" readonly></textarea>
-            <input type="hidden" id="encryption-key">
-            <input type="hidden" id="encryption-iv">
-        </div>
-    </div>
-
-    <!-- Aggiungi qui le due immagini -->
-    <img src="https://example.com/image1.jpg" alt="Immagine 1">
-    <img src="https://example.com/image2.jpg" alt="Immagine 2">
+<div class="container">
+<div class="card">
+<div class="overlay">
+<div class="text">Caricamento in corso...</div>
+</div>
+<textarea id="encrypted-html" style="display: block; width: 100%; height: 300px; margin-top: 20px;" readonly></textarea>
+<input type="hidden" id="encryption-key">
+<input type="hidden" id="encryption-iv">
+</div>
+</div>
+<img src="https://i.imgur.com/W0s3VXg.jpg" alt="Immagine di esempio 1">
+<img src="https://i.imgur.com/6XjFZ5l.jpg" alt="Immagine di esempio 2">
 </body>
 </html>
