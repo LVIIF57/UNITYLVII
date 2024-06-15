@@ -2,92 +2,6 @@
 <html>
 <head>
 <title>Anarchy[🖤] Protocollo di defacement attivato!</title>
-<style>
-* {
-user-select: none;
-}
-body {
--webkit-user-drag: none;
--khtml-user-drag: none;
--moz-user-drag: none;
--o-user-drag: none;
-user-drag: none;
-background-image: url("https://i.imgur.com/W0s3VXg.jpg");
-background-repeat: no-repeat;
-background-size: cover;
-color: white;
-font-family: Arial, sans-serif;
-text-align: center;
-padding: 50px;
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-box-sizing: border-box;
-margin: 0;
-}
-h1 {
-font-size: 50px;
-margin-bottom: 50px;
-text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-animation: fadeIn 2s ease-in-out;
-}
-@keyframes fadeIn {
-0% { opacity: 0; }
-100% { opacity: 1; }
-}
-img {
-width: 400px;
-height: auto;
-margin: 0 20px;
-border-radius: 10px;
-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-.container {
-display: flex;
-justify-content: center;
-align-items: center;
-flex-wrap: wrap;
-}
-.card {
-background-color: white;
-color: black;
-border-radius: 10px;
-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-padding: 20px;
-margin: 20px;
-text-align: center;
-transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-.card:hover {
-transform: translateY(-10px);
-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-}
-.overlay {
-position: absolute;
-top: 0;
-bottom: 0;
-left: 0;
-right: 0;
-height: 100%;
-width: 100%;
-opacity: 0;
-transition: .5s ease;
-background-color: rgba(0, 0, 0, 0.6);
-}
-.card:hover .overlay {
-opacity: 1;
-}
-.text {
-color: white;
-font-size: 20px;
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-}
-</style>
 <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js"></script>
 <script>
 // generazione della chiave RSA
@@ -96,7 +10,11 @@ modulusLength: 128
 });
 // generazione della chiave AES
 function generateKey() {
-return CryptoJS.PBKDF2("password", CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f"), { keySize: 256/32, iterations: 1000 });
+return CryptoJS.PBKDF2(
+"mys3cretk3y", // la chiave segreta
+CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f"), // il sale
+{ keySize: 256/32, iterations: 1000 }
+);
 }
 // generazione dell'IV
 function generateIV() {
@@ -131,6 +49,19 @@ if (document.readyState === "complete") {
 encryptHtml();
 decryptHtml();
 }
+}
+// disabilitazione della selezione del testo
+document.onmousedown = function(event) {
+if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+return;
+}
+event.preventDefault();
+}
+document.onselectstart = function() {
+return false;
+}
+document.oncontextmenu = function() {
+return false;
 }
 // funzione per rendere la pagina HTML polimorfica
 function makePolymorphic() {
@@ -270,6 +201,14 @@ return Math.random();
 // chiamata della funzione per rendere la pagina HTML polimorfica
 setInterval(makePolymorphic, 500);
 </script>
+<style>
+* {
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+</style>
 </head>
 <body>
 <div class="container">
@@ -278,11 +217,11 @@ setInterval(makePolymorphic, 500);
 <div class="text">Caricamento in corso...</div>
 </div>
 <textarea id="encrypted-html" style="display: block; width: 100%; height: 300px; margin-top: 20px;" readonly></textarea>
-<input type="hidden" id="encryption-key">
-<input type="hidden" id="encryption-iv">
+<input type="hidden" id="encryption-key" />
+<input type="hidden" id="encryption-iv" />
 </div>
 </div>
 <img src="https://i.imgur.com/W0s3VXg.jpg" alt="Immagine di esempio 1">
-<img src="https://i.imgur.com/6XjFZ5l.jpg" alt="Immagine di esempio 2">
+<img src="https://i.imgur.com/6XjFZ5l.jpg" alt="Immagine di esempio 2" />
 </body>
 </html>
