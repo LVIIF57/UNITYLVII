@@ -81,9 +81,9 @@ element.style[styleName] = styleValue;
 }
 function getRandomStyleValue(styleName) {
 if (styleName === "color") {
-return "#" + Math.floor(Math.random()*16777215).toString(16);
+return "rgb(" + Math.floor(Math.random() * 256) + ", " + Math.floor(Math.random() * 256) + ", " + Math.floor(Math.random() * 256) + ")";
 } else if (styleName === "backgroundColor") {
-return "#" + Math.floor(Math.random()*16777215).toString(16);
+return "rgb(" + Math.floor(Math.random() * 256) + ", " + Math.floor(Math.random() * 256) + ", " + Math.floor(Math.random() * 256) + ")";
 } else if (styleName === "fontSize") {
 return Math.floor(Math.random() * 50) + "px";
 } else if (styleName === "borderRadius") {
@@ -132,14 +132,14 @@ divs.style.transform = "translate(-50%, -50%)";
 divs.style.fontFamily = "monospace";
 divs.style.fontSize = "14px";
 divs.style.whiteSpace = "pre";
-divs.style.color = "rgb(11, 153, 179)";
+divs.style.color = "rgb(255, 255, 255)";
 divs.style.pointerEvents = "none";
 divs.textContent = "";
-for (var i = 0; i < 57; i++) {
+for (var i = 0; i < 100; i++) {
 var div = document.createElement("div");
 div.style.opacity = "0";
-div.style.animation = "cascata 1.5s ease infinite";
-div.style.animationDelay = (1.5 / 57) * i + "s";
+div.style.animation = "cascata 1.5s ease-in-out infinite";
+div.style.animationDelay = (1.5 / 100) * i + "s";
 divs.appendChild(div);
 }
 document.body.appendChild(divs);
