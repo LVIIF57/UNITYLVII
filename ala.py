@@ -7,11 +7,12 @@ def get_response(prompt):
         "Content-Type": "application/json"
     }
     params = {
-        "data": '{"contact":{"id":"7ppofiEl1zkx0Ouu-0nra","flow":true}}'
+        "data": '{"contact":{"id":"7ppofiEl1zkx0Ouu-0nra","flow":true}}',
+        "prompt": prompt
     }
 
     try:
-        response = requests.post(url, headers=headers, params=params, data={"prompt": prompt})
+        response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
 
         return response.json()["response"]
