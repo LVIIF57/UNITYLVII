@@ -123,6 +123,14 @@ width: 100%;
 height: 50px;
 padding: 10px;
 margin-bottom: 20px;
+border: none;
+border-radius: 5px;
+background-color: #222;
+color: #fff;
+outline: none;
+}
+.chat input[type="text"]:focus {
+box-shadow: 0 0 5px #f00;
 }
 .chat button {
 width: 100%;
@@ -132,6 +140,10 @@ color: #fff;
 border: none;
 padding: 10px;
 cursor: pointer;
+border-radius: 5px;
+}
+.chat button:hover {
+background-color: #c00;
 }
 </style>
 <div class="header">
@@ -149,7 +161,7 @@ cursor: pointer;
 <p>What is the political philosophy that advocates for the abolition of all government and the establishment of a society based on voluntary cooperation and mutual aid?</p>
 <label><input type="radio" name="trivia1" value="Anarchy">Anarchy</label>
 <br>
- more_vert <label><input type="radio" name="trivia1" value="Monarchy">Monarchy</label>
+<label><input type="radio" name="trivia1" value="Monarchy">Monarchy</label>
 <br>
 <label><input type="radio" name="trivia1" value="Democracy">Democracy</label>
 <br>
@@ -162,11 +174,11 @@ cursor: pointer;
 <canvas id="visualizer"></canvas>
 </div>
 </div>
-</div>
 <div class="chat">
 <input type="text" id="chat-input" placeholder="Type your message here...">
 <button onclick="sendChat()">Send</button>
 <div id="chat-output"></div>
+</div>
 </div>
 <script>
 const triviaForm = document.querySelector('.trivia form');
@@ -210,7 +222,6 @@ visualizer.style.mixBlendMode = 'multiply';
 visualizer.getContext('2d').lineWidth = 2;
 visualizer.getContext('2d').strokeStyle = '#f00';
 visualizer.getContext('2d').beginPath();
-visualizer.getContext('2d').moveTo(0, visualizer.height / 2);
 const draw = () => {
 requestAnimationFrame(draw);
 analyser.getByteTimeDomainData(dataArray);
