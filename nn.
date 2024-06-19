@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Chat Anarchica</title>
+  <script>
+    function decryptMessage(encrypted, iv) {
+      const key = crypto.subtle.importKey('raw', key, { name: 'AES-GCM' }, false, ['decrypt']);
+      const decryptedBuffer = crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+      return new TextDecoder().decode(new Uint8Array(decryptedBuffer));
+    }
+
+    function createChatPage() {
+      const chatPage = document.createElement('div');
+      chatPage.classList.add('container-chat');
+      chatPage.innerHTML = `
+        <div id="chat"></div>
+        <input type="text" id="message" placeholder="Scrivi un messaggio...">
+        <button id="send">Invia</button>
+      `;
+      return chatPage;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <img src="anarchy-icon.png" alt="Icona Anarchia" class="icon">
+      <h1>Chat Anarchica</h1>
+      <p>La chat più libera e sicura per <span>REAL</span> anarchici.</p>
+    </div>
+    <div class="form">
+      <input type="text" id="username" placeholder="Inserisci il tuo nome utente">
+      <button id="login">Accedi</button>
+    </div>
+  </div>
+  <script src="client.js"></script>
+  <script>
+    const loginButton = document.getElementById('login');
+
+    loginButton.addEventListener('click', () => {
+      const username = document.getElementById('username').value;
+      const ws = new WebSocket('wss://localhost:3001');
+      ws.addEventListener('open', () => {
+        const message = {
+          username,
+          type: 'login'
+        };
+        const encryptedMessage = encryptMessage(message);
+        ws.send(JSON.stringify(encryptedMessage));
+      });
+      ws.addEventListener('message', (event) => {
+        const { iv, encrypted } = JSON.parse(event.data);
+        const message = decryptMessage(encrypted, iv);
+        const chatPage = createChatPage();
+        chatPage.querySelector('#chat').innerText = message;
+        document.body.appendChild(chatPage);
+      });
+    });
+  </script>
+</body>
+</html>
+styles.css
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  text-align: center;
+}
+
+.content {
+  margin-bottom: 30px;
+}
+
+.icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+p span {
+  color: #f00;
+}
+
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input, button {
+  border: none;
+  background-color: #fff;
+  padding: 10px;
+  color: #000;
+  font-size: 1.2em;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+input {
+  width: 300px;
+}
+
+button {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #000;
+  color: #fff;
+}
+client.js
+const key = crypto.getRandomValues(new Uint8Array(32));
+
+async function encryptMessage(message) {
+  const encrypted = await crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: crypto.getRandomValues(new Uint8Array(12))
+    },
+    await crypto.subtle.importKey(
+      'raw',
+      key,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt']
+    ),
+    new TextEncoder().encode(JSON.stringify(message))
+  );
+
+  const iv = [...new Uint8Array(encrypted.iv)];
+  const encryptedArray = [...new Uint8Array(new Uint8Array(encrypted.encrypted).buffer)];
+  return { iv: iv.map(b => b.toString(16).padStart(2, '0')).join(''), encrypted: encryptedArray.map(b => b.toString(16).padStart(2, '0')).join('') };
+}
