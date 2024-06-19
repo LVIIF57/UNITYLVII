@@ -23,10 +23,6 @@ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 width: 150px;
 height: auto;
 margin-right: 20px;
-transition: transform 0.3s ease;
-}
-.logo:hover {
-transform: translateY(-10px);
 }
 .title {
 font-size: 48px;
@@ -93,6 +89,50 @@ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 .music-player audio {
 width: 80%;
 }
+.music-visualizer {
+position: absolute;
+bottom: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(255, 0, 0, 0.1);
+}
+.music-visualizer canvas {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+.chat {
+position: fixed;
+bottom: 0;
+right: 0;
+width: 300px;
+height: 400px;
+background-color: #000;
+color: #fff;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+padding: 20px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.chat input[type="text"] {
+width: 100%;
+height: 50px;
+padding: 10px;
+margin-bottom: 20px;
+}
+.chat button {
+width: 100%;
+height: 50px;
+background-color: #f00;
+color: #fff;
+border: none;
+padding: 10px;
+cursor: pointer;
+}
 </style>
 <div class="header">
 <img class="logo" src="https://i.imgur.com/gLZbBmj.jpg" alt="Anarchy Symbol">
@@ -109,28 +149,3 @@ width: 80%;
 <p>What is the political philosophy that advocates for the abolition of all government and the establishment of a society based on voluntary cooperation and mutual aid?</p>
 <label><input type="radio" name="trivia1" value="Anarchy">Anarchy</label>
 <br>
-<label><input type="radio" name="trivia1" value="Monarchy">Monarchy</label>
-<br>
-<label><input type="radio" name="trivia1" value="Democracy">Democracy</label>
-<br>
-<button>Submit</button>
-</div>
-<div class="music-player">
-<audio controls>
-<source src="https://www.bensound.com/bensound-music/bensound-anarchist.mp3" type="audio/mpeg">
-Your browser does not support the audio element.
-</audio>
-</div>
-</div>
-<script>
-const triviaForm = document.querySelector('.trivia form');
-const triviaAnswer = document.querySelector('.trivia input[value="Anarchy"]');
-triviaForm.addEventListener('submit', (e) => {
-e.preventDefault();
-if (triviaAnswer.checked) {
-alert('Correct!');
-} else {
-alert('Sorry, that is incorrect.');
-}
-});
-</script>
